@@ -1,38 +1,62 @@
 // src/App.jsx
 import { useState, useEffect } from 'react';
 import { ThemeProvider, CssBaseline, styled } from '@mui/material';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { 
   Box, 
   Container, 
   Typography, 
   AppBar, 
   Toolbar, 
-  Button, 
-  Card, 
-  CardContent,
-  Grid,
-  Avatar,
-  IconButton,
+  IconButton, 
   Chip,
-  Divider,
-  CircularProgress
+  Avatar,
+  CircularProgress,
+  LinearProgress,
+  Snackbar,
+  Alert
 } from '@mui/material';
 import {
   Spa as SpaIcon,
-  LocalFlorist as FloristIcon,
-  ExitToApp as LogoutIcon,
-  ShoppingBasket as BasketIcon
+  ExitToApp as LogoutIcon
 } from '@mui/icons-material';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { auth } from './firebase';
-import Login from './pages/Login';
-import xotlaTheme from './theme/XotlaTheme';
-import EcoIcon from '@material-ui/icons/Eco';
+import { auth, db } from './firebase';
+import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 
-// Importamos el logo de Xotla (asegúrate de tener este archivo)
+// Importar componentes
+import Login from './pages/Login';
+import PlantPage from './pages/PlantPage';
+import GardenView from './components/GardenView';
+import FlowerCatalog from './components/FlowerCatalog';
+import xotlaTheme from './theme/XotlaTheme';
+
+// Importaciones de utilidades
+import { 
+  calculatePlantStatus, 
+  WATER_COST, 
+  FERTILIZER_COST,
+  HEALTH_INCREASE_FERTILIZER,
+  XP_PER_CARE_ACTION,
+  XP_PER_GROWTH_LEVEL,
+  XP_FOR_NEXT_LEVEL,
+  createNewPlant
+} from './utils/plantUtils';
+
+// Servicios Firebase
+import { 
+  saveUserProgress, 
+  loadUserData as loadUserDataFromFirebase, 
+  initializeNewUser, 
+  updateLastLogin,
+  logTransaction,
+  logCareAction
+} from './services/firebaseServices';
+
+// Importamos el logo de Xotla
 import XotlaLogo from './assets/xotla-logo.svg';
 
-// Importa las imágenes de las flores (asegúrate de tener estos archivos)
+// Importa las imágenes de las flores
 import AlheliImg from './assets/flowers/alheli.webp';
 import BreathflowersImg from './assets/flowers/breathflowers.webp';
 import CarnationflowersImg from './assets/flowers/carnationflowers.webp';
@@ -49,7 +73,6 @@ import PeoniasImg from './assets/flowers/Peonias.webp';
 import PoppyImg from './assets/flowers/poppy.webp';
 import RosesImg from './assets/flowers/Roses.webp';
 import TulipsImg from './assets/flowers/tulips.webp';
-
 
 // Componentes estilizados para efectos pixel art
 const PixelBackground = styled(Box)(({ theme }) => ({
@@ -107,35 +130,6 @@ const CoinChip = styled(Chip)(({ theme }) => ({
   height: '32px',
 }));
 
-const FlowerCard = styled(Card)(({ theme }) => ({
-  transition: 'transform 0.2s',
-  cursor: 'pointer',
-  '&:hover': {
-    transform: 'translateY(-5px)',
-  },
-  position: 'relative',
-  border: '3px solid #0f0f0f',
-  '&::after': {
-    content: '""',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    backgroundImage: 'repeating-linear-gradient(45deg, rgba(255,255,255,0.05), rgba(255,255,255,0.05) 10px, transparent 10px, transparent 20px)',
-    pointerEvents: 'none',
-  },
-}));
-
-const FlowerImage = styled('img')({
-  width: '70px',
-  height: '70px',
-  margin: '0 auto',
-  display: 'block',
-  imageRendering: 'pixelated', // Mantiene el estilo pixel art
-  objectFit: 'contain'
-});
-
 const LoadingContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
@@ -156,52 +150,157 @@ const PixelLoadingText = styled(Typography)(({ theme }) => ({
   }
 }));
 
-const FlowerGridItem = styled(Grid)(({ theme }) => ({
-  padding: theme.spacing(1),
-}));
-
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [savingData, setSavingData] = useState(false);
   const [coins, setCoins] = useState(0);
-  const [selectedFlower, setSelectedFlower] = useState(null);
   const [inventory, setInventory] = useState([]);
+  const [catalogOpen, setCatalogOpen] = useState(false);
+  const [notification, setNotification] = useState({ open: false, message: '', type: 'info' });
+  const [lastCaredTime, setLastCaredTime] = useState({});
+  const [userLevel, setUserLevel] = useState(1);
+  const [experience, setExperience] = useState(0);
   
   // Datos de flores disponibles con las rutas a las imágenes
   const availableFlowers = [
-    { id: 1, name: 'Alhelí', price: 80, growTime: 3, sellingPrice: 160, color: '#db92e2', image: AlheliImg },
-    { id: 2, name: 'Nube', price: 60, growTime: 2, sellingPrice: 120, color: '#f1f1f1', image: BreathflowersImg },
-    { id: 3, name: 'Clavel', price: 90, growTime: 4, sellingPrice: 180, color: '#f77d93', image: CarnationflowersImg },
-    { id: 4, name: 'Cempasúchil', price: 110, growTime: 4, sellingPrice: 220, color: '#f89b00', image: CempasuchilImg },
-    { id: 5, name: 'Dalia', price: 95, growTime: 3, sellingPrice: 190, color: '#e87094', image: DaliasImg },
-    { id: 6, name: 'Delphinium', price: 120, growTime: 5, sellingPrice: 240, color: '#7a9ef5', image: DelphiniumImg },
-    { id: 7, name: 'Gerbera', price: 85, growTime: 3, sellingPrice: 170, color: '#ff7855', image: GerberaImg },
-    { id: 8, name: 'Hortensia', price: 140, growTime: 5, sellingPrice: 280, color: '#9fbfff', image: HydrangeasImg },
-    { id: 9, name: 'Lirio', price: 130, growTime: 4, sellingPrice: 260, color: '#fff3cf', image: LilliesImg },
-    { id: 10, name: 'Loto', price: 160, growTime: 6, sellingPrice: 320, color: '#fbbbd6', image: LotusImg },
-    { id: 11, name: 'Narciso', price: 100, growTime: 3, sellingPrice: 200, color: '#fff27a', image: NarcissusImg },
-    { id: 12, name: 'Orquídea', price: 150, growTime: 6, sellingPrice: 350, color: '#c896db', image: OrchidsImg },
-    { id: 13, name: 'Peonía', price: 125, growTime: 5, sellingPrice: 250, color: '#ff9b89', image: PeoniasImg },
-    { id: 14, name: 'Amapola', price: 90, growTime: 3, sellingPrice: 180, color: '#ff6b6b', image: PoppyImg },
-    { id: 15, name: 'Rosa', price: 50, growTime: 2, sellingPrice: 100, color: '#ffafd0', image: RosesImg },
-    { id: 16, name: 'Tulipán', price: 75, growTime: 3, sellingPrice: 150, color: '#e36956', image: TulipsImg },
+    { id: 1, name: 'Alhelí', price: 80, growTime: 12, sellingPrice: 160, color: '#db92e2', image: AlheliImg },
+    { id: 2, name: 'Nube', price: 60, growTime: 8, sellingPrice: 120, color: '#f1f1f1', image: BreathflowersImg },
+    { id: 3, name: 'Clavel', price: 90, growTime: 16, sellingPrice: 180, color: '#f77d93', image: CarnationflowersImg },
+    { id: 4, name: 'Cempasúchil', price: 110, growTime: 16, sellingPrice: 220, color: '#f89b00', image: CempasuchilImg },
+    { id: 5, name: 'Dalia', price: 95, growTime: 12, sellingPrice: 190, color: '#e87094', image: DaliasImg },
+    { id: 6, name: 'Delphinium', price: 120, growTime: 20, sellingPrice: 240, color: '#7a9ef5', image: DelphiniumImg },
+    { id: 7, name: 'Gerbera', price: 85, growTime: 12, sellingPrice: 170, color: '#ff7855', image: GerberaImg },
+    { id: 8, name: 'Hortensia', price: 140, growTime: 20, sellingPrice: 280, color: '#9fbfff', image: HydrangeasImg },
+    { id: 9, name: 'Lirio', price: 130, growTime: 16, sellingPrice: 260, color: '#fff3cf', image: LilliesImg },
+    { id: 10, name: 'Loto', price: 160, growTime: 24, sellingPrice: 320, color: '#fbbbd6', image: LotusImg },
+    { id: 11, name: 'Narciso', price: 100, growTime: 12, sellingPrice: 200, color: '#fff27a', image: NarcissusImg },
+    { id: 12, name: 'Orquídea', price: 150, growTime: 24, sellingPrice: 350, color: '#c896db', image: OrchidsImg },
+    { id: 13, name: 'Peonía', price: 125, growTime: 20, sellingPrice: 250, color: '#ff9b89', image: PeoniasImg },
+    { id: 14, name: 'Amapola', price: 90, growTime: 12, sellingPrice: 180, color: '#ff6b6b', image: PoppyImg },
+    { id: 15, name: 'Rosa', price: 50, growTime: 8, sellingPrice: 100, color: '#ffafd0', image: RosesImg },
+    { id: 16, name: 'Tulipán', price: 75, growTime: 12, sellingPrice: 150, color: '#e36956', image: TulipsImg },
   ];
   
+  // Flor inicial para nuevos usuarios (la rosa es la más barata)
+  const initialFlower = availableFlowers.find(flower => flower.id === 15);
+
+  // Obtener información de la planta por ID
+  const getFlowerById = (id) => {
+    return availableFlowers.find(flower => flower.id === parseInt(id));
+  };
+
+  // Guardar datos del usuario en Firestore
+  const saveUserData = async () => {
+    if (!user || !user.id) return;
+    
+    setSavingData(true);
+    
+    try {
+      await saveUserProgress(user.id, {
+        coins,
+        inventory,
+        userLevel,
+        experience,
+        lastCaredTime
+      });
+      
+      // Registrar en consola para debug
+      console.log('Datos guardados exitosamente');
+    } catch (error) {
+      console.error('Error al guardar datos:', error);
+      setNotification({
+        open: true,
+        message: 'Error al guardar tu progreso',
+        type: 'error'
+      });
+    } finally {
+      setSavingData(false);
+    }
+  };
+
+  // Cargar datos del usuario desde Firestore
+  const loadUserData = async (userId) => {
+    try {
+      const result = await loadUserDataFromFirebase(userId);
+      
+      if (result.success) {
+        if (result.isNewUser) {
+          // Usuario nuevo: inicializar con planta inicial
+          const newUserResult = await initializeNewUser(userId, initialFlower);
+          
+          if (newUserResult.success) {
+            setCoins(newUserResult.data.coins);
+            setInventory(newUserResult.data.inventory);
+            setUserLevel(newUserResult.data.userLevel);
+            setExperience(newUserResult.data.experience);
+            setLastCaredTime(newUserResult.data.lastCaredTime);
+            
+            setNotification({
+              open: true,
+              message: '¡Bienvenido a Xotla! Has recibido una Rosa para comenzar tu jardín.',
+              type: 'success'
+            });
+          }
+        } else {
+          // Usuario existente: cargar datos
+          const userData = result.data;
+          
+          setCoins(userData.coins || 0);
+          setInventory(userData.inventory || []);
+          setUserLevel(userData.userLevel || 1);
+          setExperience(userData.experience || 0);
+          setLastCaredTime(userData.lastCaredTime || {});
+          
+          // Actualizar el estado de las plantas según el tiempo transcurrido
+          if (userData.inventory && userData.inventory.length > 0) {
+            updatePlantsStatus(userData.inventory, userData.lastCaredTime || {});
+          }
+          
+          // Actualizar último login
+          await updateLastLogin(userId);
+        }
+      } else {
+        throw new Error('Error al cargar datos de usuario');
+      }
+    } catch (error) {
+      console.error('Error al cargar datos:', error);
+      setNotification({
+        open: true,
+        message: 'Error al cargar tus datos',
+        type: 'error'
+      });
+    }
+  };
+
+  // Actualiza el estado de las plantas según el tiempo transcurrido
+  const updatePlantsStatus = (plants, lastCaredTimes) => {
+    const updatedPlants = plants.map(plant => calculatePlantStatus(plant, lastCaredTimes));
+    setInventory(updatedPlants);
+  };
 
   // Escucha cambios en el estado de autenticación
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
-        setUser({
+        // Definimos el usuario
+        const userData = {
           email: currentUser.email,
           id: currentUser.uid,
           displayName: currentUser.displayName || currentUser.email.split('@')[0]
-        });
-        // Inicializar con valores simulados
-        setCoins(100);
-        // Aquí se cargarían datos del usuario desde Firestore
+        };
+        setUser(userData);
+        
+        // Cargamos los datos del usuario
+        loadUserData(userData.id);
       } else {
         setUser(null);
+        // Reiniciar estados
+        setCoins(0);
+        setInventory([]);
+        setLastCaredTime({});
+        setUserLevel(1);
+        setExperience(0);
       }
       setLoading(false);
     });
@@ -210,6 +309,54 @@ function App() {
     return () => unsubscribe();
   }, []);
 
+  // Actualizar estado de plantas periódicamente
+  useEffect(() => {
+    if (!user) return;
+
+    // Actualiza cada minuto
+    const interval = setInterval(() => {
+      updatePlantsStatus(inventory, lastCaredTime);
+    }, 60000); // 60 segundos
+
+    return () => clearInterval(interval);
+  }, [user, inventory, lastCaredTime]);
+
+  // Guardar cuando cambian datos importantes
+  useEffect(() => {
+    if (user && !loading && inventory.length > 0) {
+      // Debounce para no guardar constantemente
+      const saveTimeout = setTimeout(() => {
+        saveUserData();
+      }, 5000); // Guardar después de 5 segundos de inactividad
+      
+      return () => clearTimeout(saveTimeout);
+    }
+  }, [user, coins, inventory, userLevel, experience]);
+
+  // Ganar experiencia y subir de nivel
+  const gainExperience = async (xp) => {
+    let newExperience = experience + xp;
+    let newLevel = userLevel;
+    
+    // Verificar si sube de nivel
+    if (newExperience >= XP_FOR_NEXT_LEVEL * userLevel) {
+      newLevel = userLevel + 1;
+      
+      // Recompensa por subir de nivel
+      const levelUpReward = 100;
+      setCoins(prevCoins => prevCoins + levelUpReward);
+      
+      setNotification({
+        open: true,
+        message: `¡Has subido a nivel ${newLevel}! Has ganado ${levelUpReward} monedas como recompensa.`,
+        type: 'success'
+      });
+    }
+    
+    setExperience(newExperience);
+    setUserLevel(newLevel);
+  };
+
   const handleLogin = (userData) => {
     console.log('Usuario ha iniciado sesión:', userData);
     setUser(userData);
@@ -217,6 +364,8 @@ function App() {
 
   const handleLogout = async () => {
     try {
+      // Guardar datos antes de cerrar sesión
+      await saveUserData();
       await signOut(auth);
       setUser(null);
     } catch (error) {
@@ -224,223 +373,358 @@ function App() {
     }
   };
 
-  const handleBuyFlower = (flower) => {
+  const handleBuyFlower = async (flower) => {
     if (coins >= flower.price) {
+      // Restar monedas
       setCoins(prev => prev - flower.price);
-      setInventory(prev => [...prev, { 
-        ...flower, 
-        id: `${flower.id}-${Date.now()}`, 
-        plantedAt: new Date(), 
-        growthStage: 0 
-      }]);
+      
+      // Crear nueva planta
+      const newFlower = createNewPlant(flower);
+      
+      // Añadir a inventario
+      setInventory(prev => [...prev, newFlower]);
+      
+      // Registrar transacción
+      if (user && user.id) {
+        await logTransaction(user.id, {
+          type: 'purchase',
+          flowerId: flower.id,
+          flowerName: flower.name,
+          price: flower.price,
+          plantId: newFlower.id
+        });
+      }
+      
+      // Notificar al usuario
+      setNotification({
+        open: true,
+        message: `¡Has comprado ${flower.name}! Recuerda regarla regularmente.`,
+        type: 'success'
+      });
+      
+      // Cerrar catálogo
+      setCatalogOpen(false);
+      
+      // Guardar datos
+      saveUserData();
+    } else {
+      setNotification({
+        open: true,
+        message: `No tienes suficientes monedas para comprar ${flower.name}.`,
+        type: 'warning'
+      });
     }
   };
 
-  const handleSellFlower = (flowerId) => {
+  const handleSellFlower = async (flowerId) => {
     const flowerToSell = inventory.find(f => f.id === flowerId);
     if (flowerToSell) {
-      setCoins(prev => prev + flowerToSell.sellingPrice);
+      // Calculamos el precio de venta según el estado de la planta
+      const basePrice = flowerToSell.sellingPrice;
+      const growthMultiplier = flowerToSell.growthStage === 3 ? 1 : 
+                              flowerToSell.growthStage === 2 ? 0.75 : 
+                              flowerToSell.growthStage === 1 ? 0.5 : 0.25;
+      const healthMultiplier = flowerToSell.health / 100;
+      const finalPrice = Math.round(basePrice * growthMultiplier * healthMultiplier);
+      
+      // Añadir monedas
+      setCoins(prev => prev + finalPrice);
+      
+      // Eliminar del inventario
       setInventory(prev => prev.filter(f => f.id !== flowerId));
+      
+      // Registrar transacción
+      if (user && user.id) {
+        await logTransaction(user.id, {
+          type: 'sale',
+          flowerId: flowerToSell.id.split('-')[0],
+          flowerName: flowerToSell.name,
+          price: finalPrice,
+          plantId: flowerToSell.id,
+          growthStage: flowerToSell.growthStage,
+          health: flowerToSell.health
+        });
+      }
+      
+      // Ganar experiencia por vender
+      gainExperience(Math.round(finalPrice / 10));
+      
+      // Notificar al usuario
+      setNotification({
+        open: true,
+        message: `Has vendido ${flowerToSell.name} por ${finalPrice} monedas.`,
+        type: 'success'
+      });
+      
+      // Guardar datos
+      saveUserData();
     }
+  };
+
+  const handleWaterPlant = async (flowerId) => {
+    if (coins < WATER_COST) {
+      setNotification({
+        open: true,
+        message: `No tienes suficientes monedas para regar la planta.`,
+        type: 'warning'
+      });
+      return;
+    }
+    
+    // Restar costo
+    setCoins(prev => prev - WATER_COST);
+    
+    // Actualizar inventario
+    const now = new Date().toISOString();
+    setInventory(prev => prev.map(flower => {
+      if (flower.id === flowerId) {
+        return { 
+          ...flower, 
+          water: 100,  // Restauramos el agua al 100%
+          lastWatered: now
+        };
+      }
+      return flower;
+    }));
+    
+    // Actualizar tiempo de cuidado
+    setLastCaredTime(prev => ({
+      ...prev,
+      [`water-${flowerId}`]: now
+    }));
+    
+    // Registrar acción de cuidado
+    if (user && user.id) {
+      await logCareAction(user.id, {
+        type: 'water',
+        plantId: flowerId,
+        cost: WATER_COST
+      });
+    }
+    
+    // Ganar experiencia
+    gainExperience(XP_PER_CARE_ACTION);
+    
+    // Notificar
+    setNotification({
+      open: true,
+      message: `Has regado tu planta. ¡Ahora está feliz!`,
+      type: 'success'
+    });
+  };
+
+  const handleFertilizePlant = async (flowerId) => {
+    if (coins < FERTILIZER_COST) {
+      setNotification({
+        open: true,
+        message: `No tienes suficientes monedas para fertilizar la planta.`,
+        type: 'warning'
+      });
+      return;
+    }
+    
+    // Restar costo
+    setCoins(prev => prev - FERTILIZER_COST);
+    
+    // Actualizar inventario
+    const now = new Date().toISOString();
+    setInventory(prev => prev.map(flower => {
+      if (flower.id === flowerId) {
+        return { 
+          ...flower, 
+          health: Math.min(100, flower.health + HEALTH_INCREASE_FERTILIZER),  // Aumentar salud
+          lastFertilized: now
+        };
+      }
+      return flower;
+    }));
+    
+    // Actualizar tiempo de cuidado
+    setLastCaredTime(prev => ({
+      ...prev,
+      [`fertilize-${flowerId}`]: now
+    }));
+    
+    // Registrar acción de cuidado
+    if (user && user.id) {
+      await logCareAction(user.id, {
+        type: 'fertilize',
+        plantId: flowerId,
+        cost: FERTILIZER_COST
+      });
+    }
+    
+    // Ganar experiencia
+    gainExperience(XP_PER_CARE_ACTION * 2);
+    
+    // Notificar
+    setNotification({
+      open: true,
+      message: `Has fertilizado tu planta. ¡Su salud ha mejorado!`,
+      type: 'success'
+    });
+  };
+
+  // Abrir el catálogo
+  const handleOpenCatalog = () => {
+    setCatalogOpen(true);
   };
 
   return (
     <ThemeProvider theme={xotlaTheme}>
       <CssBaseline />
-      {loading ? (
-        <LoadingContainer>
-          <CircularProgress
-            size={60}
-            thickness={4}
-            sx={{
-              color: 'secondary.main',
-              '& .MuiCircularProgress-circle': {
-                strokeLinecap: 'square', // Cuadrado para efecto pixel
-              }
-            }}
-          />
-          <PixelLoadingText variant="h3">
-            Plantando semillas...
-          </PixelLoadingText>
-        </LoadingContainer>
-      ) : !user ? (
-        <PixelBackground>
-          <Container maxWidth="sm" sx={{ pt: 4, pb: 4 }}>
-            <Box display="flex" justifyContent="center" mb={4}>
-              <PixelLogo src={XotlaLogo} alt="Xotla Logo" />
-            </Box>
-            <Login onLogin={handleLogin} />
-          </Container>
-        </PixelBackground>
-      ) : (
-        <PixelBackground>
-          <PixelAppBar position="sticky">
-            <Toolbar>
-              <PixelLogo src={XotlaLogo} alt="Xotla Logo" sx={{ mr: 2 }} />
-              <Typography variant="h3" sx={{ flexGrow: 1 }}>
-                Xotla
-              </Typography>
-              <CoinChip
-                icon={<SpaIcon />}
-                label={coins}
-                sx={{ mr: 2 }}
-              />
-              <Chip
-                avatar={
-                  <Avatar sx={{ bgcolor: 'primary.dark' }}>
-                    {user.displayName ? user.displayName[0].toUpperCase() : 'U'}
-                  </Avatar>
+      <Router>
+        {loading ? (
+          <LoadingContainer>
+            <CircularProgress
+              size={60}
+              thickness={4}
+              sx={{
+                color: 'secondary.main',
+                '& .MuiCircularProgress-circle': {
+                  strokeLinecap: 'square', // Cuadrado para efecto pixel
                 }
-                label={user.displayName || user.email}
-                variant="outlined"
-                sx={{ 
-                  mr: 2, 
-                  border: '2px solid #0f0f0f',
-                  borderRadius: 0,
-                  fontFamily: '"Press Start 2P", cursive',
-                  fontSize: '0.7rem',
-                }}
+              }}
+            />
+            <PixelLoadingText variant="h3">
+              Plantando semillas...
+            </PixelLoadingText>
+          </LoadingContainer>
+        ) : !user ? (
+          <PixelBackground>
+            <Container maxWidth="sm" sx={{ pt: 4, pb: 4 }}>
+              <Box display="flex" justifyContent="center" mb={4}>
+                <PixelLogo src={XotlaLogo} alt="Xotla Logo" />
+              </Box>
+              <Login onLogin={handleLogin} />
+            </Container>
+          </PixelBackground>
+        ) : (
+          <PixelBackground>
+            <PixelAppBar position="sticky">
+              <Toolbar>
+                <PixelLogo src={XotlaLogo} alt="Xotla Logo" sx={{ mr: 2 }} />
+                <Typography variant="h3" sx={{ flexGrow: 1 }}>
+                  Xotla
+                </Typography>
+                <CoinChip
+                  icon={<SpaIcon />}
+                  label={coins}
+                  sx={{ mr: 2 }}
+                />
+                <Chip
+                  avatar={
+                    <Avatar sx={{ bgcolor: 'primary.dark' }}>
+                      {user.displayName ? user.displayName[0].toUpperCase() : 'U'}
+                    </Avatar>
+                  }
+                  label={`Nv.${userLevel}`}
+                  variant="outlined"
+                  sx={{ 
+                    mr: 2, 
+                    border: '2px solid #0f0f0f',
+                    borderRadius: 0,
+                    fontFamily: '"Press Start 2P", cursive',
+                    fontSize: '0.7rem',
+                  }}
+                />
+                <IconButton color="secondary" onClick={handleLogout}>
+                  <LogoutIcon />
+                </IconButton>
+              </Toolbar>
+            </PixelAppBar>
+
+            {/* Indicador de guardado */}
+            {savingData && (
+              <Box sx={{ width: '100%', mb: 2 }}>
+                <LinearProgress color="secondary" />
+                <Typography variant="caption" align="center" display="block">
+                  Guardando progreso...
+                </Typography>
+              </Box>
+            )}
+            
+            {/* Rutas de la aplicación */}
+            <Routes>
+              <Route 
+                path="/" 
+                element={
+                  <GardenView 
+                    inventory={inventory}
+                    coins={coins}
+                    onWater={handleWaterPlant}
+                    onFertilize={handleFertilizePlant}
+                    onOpenCatalog={handleOpenCatalog}
+                    maxPlots={9} // Número máximo de parcelas disponibles
+                  />
+                } 
               />
-              <IconButton color="secondary" onClick={handleLogout}>
-                <LogoutIcon />
-              </IconButton>
-            </Toolbar>
-          </PixelAppBar>
-
-          <Container maxWidth="lg" sx={{ mt: 4, mb: 8 }}>
-            <Grid container spacing={3}>
-              {/* Sección principal del juego */}
-              <Grid item xs={12}>
-                <Card>
-                  <CardContent>
-                    <Typography variant="h2" gutterBottom>
-                      ¡Bienvenido a tu Jardín en Xotla!
-                    </Typography>
-                    <Typography>
-                      Cultiva hermosas flores en tu jardín azteca. Compra semillas, cuida tus plantas y véndelas para obtener ganancias.
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
-
-              {/* Catálogo de flores disponibles */}
-              <Grid item xs={12} md={6}>
-                <Card>
-                  <CardContent>
-                    <Typography variant="h3" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
-                      <FloristIcon sx={{ mr: 1 }} /> Catálogo de Flores
-                    </Typography>
-                    <Divider sx={{ mb: 2 }} />
-                    
-                    <Grid container spacing={2}>
-                      {availableFlowers.map((flower) => (
-                        <FlowerGridItem item xs={6} sm={4} key={flower.id}>
-                          <FlowerCard>
-                            <CardContent>
-                              {/* Usamos la imagen de la flor */}
-                              <FlowerImage 
-                                src={flower.image} 
-                                alt={flower.name}
-                              />
-                              <Typography variant="h4" align="center" gutterBottom sx={{ fontSize: '0.8rem' }}>
-                                {flower.name}
-                              </Typography>
-                              <Typography variant="body2" align="center" gutterBottom sx={{ fontSize: '0.6rem' }}>
-                                Precio: {flower.price} <SpaIcon sx={{ fontSize: 12 }} />
-                              </Typography>
-                              <Button 
-                                variant="contained" 
-                                fullWidth 
-                                size="small"
-                                color="primary"
-                                onClick={() => handleBuyFlower(flower)}
-                                disabled={coins < flower.price}
-                                sx={{ mt: 1, fontSize: '0.6rem' }}
-                              >
-                                Comprar
-                              </Button>
-                            </CardContent>
-                          </FlowerCard>
-                        </FlowerGridItem>
-                      ))}
-                    </Grid>
-                  </CardContent>
-                </Card>
-              </Grid>
-
-              {/* Inventario de flores */}
-              <Grid item xs={12} md={6}>
-                <Card>
-                  <CardContent>
-                    <Typography variant="h3" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
-                      <EcoIcon sx={{ mr: 1 }} /> Tu Jardín
-                    </Typography>
-                    <Divider sx={{ mb: 2 }} />
-                    
-                    {inventory.length === 0 ? (
-                      <Box sx={{ p: 3, textAlign: 'center' }}>
-                        <Typography>
-                          Tu jardín está vacío. ¡Compra flores para comenzar!
-                        </Typography>
-                      </Box>
-                    ) : (
-                      <Grid container spacing={2}>
-                        {inventory.map((flower) => (
-                          <FlowerGridItem item xs={6} sm={4} key={flower.id}>
-                            <FlowerCard>
-                              <CardContent>
-                                {/* Usamos la imagen de la flor */}
-                                <FlowerImage 
-                                  src={flower.image} 
-                                  alt={flower.name}
-                                />
-                                <Typography variant="h4" align="center" gutterBottom sx={{ fontSize: '0.8rem' }}>
-                                  {flower.name}
-                                </Typography>
-                                <Typography variant="body2" align="center" gutterBottom sx={{ fontSize: '0.6rem' }}>
-                                  Valor: {flower.sellingPrice} <SpaIcon sx={{ fontSize: 12 }} />
-                                </Typography>
-                                <Button 
-                                  variant="contained" 
-                                  fullWidth
-                                  size="small"
-                                  color="secondary"
-                                  onClick={() => handleSellFlower(flower.id)}
-                                  sx={{ mt: 1, fontSize: '0.6rem' }}
-                                >
-                                  Vender
-                                </Button>
-                              </CardContent>
-                            </FlowerCard>
-                          </FlowerGridItem>
-                        ))}
-                      </Grid>
-                    )}
-                  </CardContent>
-                </Card>
-              </Grid>
-            </Grid>
-          </Container>
-          
-          {/* Footer */}
-          <Box 
-            component="footer" 
-            sx={{ 
-              p: 2, 
-              mt: 'auto', 
-              backgroundColor: 'background.paper',
-              borderTop: '3px solid #0f0f0f',
-              textAlign: 'center',
-              position: 'relative',
-              zIndex: 1
-            }}
-          >
-            <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
-              🌸 Xotla - Tu jardín azteca de pixel art 🌸
-            </Typography>
-          </Box>
-        </PixelBackground>
-      )}
+              <Route 
+                path="/plant/:plantId" 
+                element={
+                  <PlantPage 
+                    inventory={inventory}
+                    coins={coins}
+                    onWater={handleWaterPlant}
+                    onFertilize={handleFertilizePlant}
+                    onSell={handleSellFlower}
+                    onUpdateInventory={setInventory}
+                  />
+                } 
+              />
+              <Route path="*" element={<Navigate to="/" />} />
+            </Routes>
+            
+            {/* Catálogo de flores */}
+            <FlowerCatalog 
+              open={catalogOpen}
+              onClose={() => setCatalogOpen(false)}
+              flowers={availableFlowers}
+              coins={coins}
+              onBuy={handleBuyFlower}
+            />
+            
+            {/* Snackbar para notificaciones */}
+            <Snackbar 
+              open={notification.open} 
+              autoHideDuration={6000} 
+              onClose={() => setNotification({ ...notification, open: false })}
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            >
+              <Alert 
+                onClose={() => setNotification({ ...notification, open: false })} 
+                severity={notification.type}
+                sx={{ 
+                  borderRadius: 0, 
+                  border: '2px solid #0f0f0f',
+                  fontFamily: '"Press Start 2P", cursive',
+                  fontSize: '0.7rem'
+                }}
+              >
+                {notification.message}
+              </Alert>
+            </Snackbar>
+            
+            {/* Footer */}
+            <Box 
+              component="footer" 
+              sx={{ 
+                p: 2, 
+                mt: 'auto', 
+                backgroundColor: 'background.paper',
+                borderTop: '3px solid #0f0f0f',
+                textAlign: 'center',
+                position: 'relative',
+                zIndex: 1
+              }}
+            >
+              <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
+                🌸 Xotla - Tu jardín azteca de pixel art 🌸
+              </Typography>
+            </Box>
+          </PixelBackground>
+        )}
+      </Router>
     </ThemeProvider>
   );
 }
