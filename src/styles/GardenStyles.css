@@ -1,0 +1,521 @@
+/* src/styles/GardenStyles.css */
+
+/* Animaciones y efectos para el jardín */
+@keyframes floating {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-5px); }
+  }
+  
+  @keyframes wiggle {
+    0%, 100% { transform: rotate(-2deg); }
+    50% { transform: rotate(2deg); }
+  }
+  
+  @keyframes pulsate {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+  
+  @keyframes shine {
+    0% { opacity: 0.5; }
+    50% { opacity: 1; }
+    100% { opacity: 0.5; }
+  }
+  
+  @keyframes water-drop {
+    0% { 
+      transform: translateY(0) scale(1);
+      opacity: 0.9;
+    }
+    100% { 
+      transform: translateY(20px) scale(0.5);
+      opacity: 0;
+    }
+  }
+  
+  @keyframes leaf-float {
+    0% { transform: rotate(0deg) translateX(0); }
+    25% { transform: rotate(5deg) translateX(10px); }
+    50% { transform: rotate(0deg) translateX(0); }
+    75% { transform: rotate(-5deg) translateX(-10px); }
+    100% { transform: rotate(0deg) translateX(0); }
+  }
+  
+  @keyframes butterfly-float {
+    0%, 100% { transform: translateX(0) translateY(0) rotate(-5deg); }
+    25% { transform: translateX(20px) translateY(-15px) rotate(5deg); }
+    50% { transform: translateX(40px) translateY(-5px) rotate(-5deg); }
+    75% { transform: translateX(20px) translateY(-15px) rotate(5deg); }
+  }
+  
+  /* Estilos para el contenedor principal del jardín */
+  .garden-container {
+    position: relative;
+    min-height: calc(100vh - 70px);
+    padding: 20px;
+    background-color: transparent;
+    z-index: 10;
+  }
+  
+  /* Título del jardín con estilo decorativo */
+  .garden-title {
+    text-align: center;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 2rem;
+    color: #f8f5e4;
+    margin-bottom: 30px;
+    position: relative;
+    text-shadow: 3px 3px 0 #0a0c0b;
+    padding-bottom: 15px;
+  }
+  
+  .garden-title::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 150px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #ffd966, transparent);
+  }
+  
+  /* Efectos decorativos para las plantas */
+  .plant-hover {
+    transition: transform 0.3s;
+  }
+  
+  .plant-hover:hover {
+    transform: translateY(-5px);
+  }
+  
+  .plant-image {
+    transition: transform 0.3s;
+    animation: floating 4s ease-in-out infinite;
+  }
+  
+  .plant-mature {
+    animation: pulsate 3s ease-in-out infinite;
+  }
+  
+  .water-effect {
+    position: relative;
+  }
+  
+  .water-effect::before {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: 40%;
+    width: 6px;
+    height: 6px;
+    background-color: #8ecde6;
+    border-radius: 50%;
+    opacity: 0.8;
+    animation: water-drop 1.5s infinite ease-out;
+  }
+  
+  .water-effect::after {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: 60%;
+    width: 6px;
+    height: 6px;
+    background-color: #8ecde6;
+    border-radius: 50%;
+    opacity: 0.8;
+    animation: water-drop 1.5s infinite ease-out 0.5s;
+  }
+  
+  /* Decoraciones de fondo */
+  .floating-leaf {
+    position: absolute;
+    width: 20px;
+    height: 15px;
+    background-color: #4c9f47;
+    border-radius: 50% 50% 0 50%;
+    opacity: 0.5;
+    animation: leaf-float 10s infinite ease-in-out;
+    z-index: 5;
+  }
+  
+  .butterfly {
+    position: absolute;
+    z-index: 20;
+    animation: butterfly-float 15s infinite ease-in-out;
+  }
+  
+  .butterfly-wings {
+    position: relative;
+    width: 15px;
+    height: 12px;
+  }
+  
+  .butterfly-wings::before,
+  .butterfly-wings::after {
+    content: "";
+    position: absolute;
+    width: 10px;
+    height: 12px;
+    background-color: #ffa5c3;
+    border: 1px solid #0a0c0b;
+    border-radius: 50% 50% 0 50%;
+    opacity: 0.6;
+  }
+  
+  .butterfly-wings::before {
+    left: -5px;
+    animation: wiggle 0.3s infinite alternate;
+  }
+  
+  .butterfly-wings::after {
+    right: -5px;
+    transform: scaleX(-1);
+    animation: wiggle 0.3s infinite alternate-reverse;
+  }
+  
+  /* Cuadrícula de parcelas con espaciado adecuado */
+  .garden-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 10px;
+    position: relative;
+  }
+  
+  /* Estilo para panel de información */
+  .info-panel {
+    background-color: rgba(48, 74, 46, 0.8);
+    border: 3px solid #0a0c0b;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    backdrop-filter: blur(3px);
+  }
+  
+  /* Marcos adicionales para títulos y elementos especiales */
+  .wooden-frame {
+    background-color: #304a2e;
+    border: 5px solid #4d3a23;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    padding: 15px;
+    position: relative;
+  }
+  
+  .wooden-frame::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 2px solid rgba(255,255,255,0.1);
+    border-radius: 5px;
+    pointer-events: none;
+  }
+  
+  /* Decoración de borde de tierra para el contenedor del jardín */
+  .garden-border {
+    position: relative;
+  }
+  
+  .garden-border::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 20px;
+    background-color: #735f4d;
+    border-top: 3px solid #4d3a23;
+  }
+  
+  /* Estilización de barras de progreso */
+  .progress-bar {
+    height: 10px;
+    background-color: #1e3222;
+    border: 2px solid #0a0c0b;
+    border-radius: 5px;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  .progress-bar-fill {
+    height: 100%;
+    background-color: #4c9f47;
+    transition: width 0.3s;
+  }
+  
+  .progress-bar-water {
+    background-color: #8ecde6;
+    background-image: linear-gradient(90deg, #8ecde6, #a6d9f2);
+  }
+  
+  .progress-bar-health {
+    background-color: #78c272;
+    background-image: linear-gradient(90deg, #78c272, #90d78a);
+  }
+  
+  /* Botones mejorados con estilos naturales */
+  .nature-button {
+    background-color: #4c9f47;
+    color: white;
+    border: 2px solid #3a7a32;
+    border-radius: 5px;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.7rem;
+    padding: 6px 12px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.2s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  }
+  
+  .nature-button:hover {
+    background-color: #5db358;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  }
+  
+  .nature-button:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  }
+  
+  .water-button {
+    background-color: #8ecde6;
+    border-color: #619dc1;
+  }
+  
+  .water-button:hover {
+    background-color: #a6d9f2;
+  }
+  
+  .sell-button {
+    background-color: #ffdb70;
+    border-color: #e3b34a;
+    color: #0a0c0b;
+  }
+  
+  .sell-button:hover {
+    background-color: #ffe490;
+  }
+  
+  /* Sol decorativo */
+  .decorative-sun {
+    position: absolute;
+    top: 30px;
+    right: 40px;
+    width: 50px;
+    height: 50px;
+    background-color: #ffd966;
+    border-radius: 50%;
+    border: 3px solid #e3b34a;
+    box-shadow: 0 0 20px rgba(255, 217, 102, 0.7);
+    z-index: 5;
+    animation: pulsate 4s infinite;
+  }
+  
+  .decorative-sun::after {
+    content: "";
+    position: absolute;
+    top: -15px;
+    left: -15px;
+    right: -15px;
+    bottom: -15px;
+    background: radial-gradient(circle, rgba(255,217,102,0.5) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: shine 3s infinite;
+  }
+  
+  /* Nubes decorativas */
+  .decorative-cloud {
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 50px;
+    z-index: 4;
+  }
+  
+  .cloud-1 {
+    top: 60px;
+    left: 10%;
+    width: 100px;
+    height: 40px;
+    animation: floating 15s infinite;
+  }
+  
+  .cloud-1::before, .cloud-1::after {
+    content: "";
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 50%;
+  }
+  
+  .cloud-1::before {
+    width: 50px;
+    height: 50px;
+    top: -20px;
+    left: 15px;
+  }
+  
+  .cloud-1::after {
+    width: 30px;
+    height: 30px;
+    top: -10px;
+    left: 50px;
+  }
+  
+  .cloud-2 {
+    top: 40px;
+    right: 20%;
+    width: 70px;
+    height: 30px;
+    animation: floating 20s infinite reverse;
+  }
+  
+  .cloud-2::before, .cloud-2::after {
+    content: "";
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 50%;
+  }
+  
+  .cloud-2::before {
+    width: 40px;
+    height: 40px;
+    top: -15px;
+    left: 10px;
+  }
+  
+  .cloud-2::after {
+    width: 25px;
+    height: 25px;
+    top: -10px;
+    left: 35px;
+  }
+  
+  /* Marcos para botones especiales */
+  .framed-button {
+    position: relative;
+    padding: 6px 12px;
+    background-color: #4c9f47;
+    color: white;
+    border: none;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.7rem;
+    cursor: pointer;
+    z-index: 1;
+  }
+  
+  .framed-button::before {
+    content: "";
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    right: -4px;
+    bottom: -4px;
+    background-color: #4d3a23;
+    border-radius: 8px;
+    z-index: -1;
+  }
+  
+  .framed-button:hover {
+    transform: translateY(-2px);
+  }
+  
+  .framed-button:active {
+    transform: translateY(1px);
+  }
+  
+  /* Panel de tierra para el fondo */
+  .soil-panel {
+    background-color: #735f4d;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cpath fill='%239C8B75' fill-opacity='0.4' d='M0 0h4v4H0V0zm4 4h4v4H4V4z'%3E%3C/path%3E%3C/svg%3E");
+    border-top: 3px solid #4d3a23;
+    padding: 15px;
+    border-radius: 0 0 10px 10px;
+  }
+  
+  /* Indicador de recurso con icono */
+  .resource-indicator {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  
+  .resource-indicator-icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .resource-indicator-label {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.6rem;
+    color: #f8f5e4;
+  }
+  
+  /* Estilo para efectos de cultivo */
+  .growing-effect {
+    position: relative;
+  }
+  
+  .growing-effect::after {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: 0;
+    right: 0;
+    height: 10px;
+    background-image: radial-gradient(circle, #90d78a 1px, transparent 1px);
+    background-size: 10px 10px;
+    animation: floating 2s infinite;
+    opacity: 0.6;
+  }
+  
+  /* Efectos para plantas según su etapa */
+  .stage-seed {
+    transform: scale(0.5);
+  }
+  
+  .stage-sprout {
+    transform: scale(0.7);
+  }
+  
+  .stage-bud {
+    transform: scale(0.9);
+  }
+  
+  .stage-flower {
+    transform: scale(1.1);
+    animation: pulsate 4s ease-in-out infinite;
+  }
+  
+  /* Footer con decoración natural */
+  .garden-footer {
+    position: relative;
+    padding: 15px;
+    background-color: #1e3222;
+    border-top: 3px solid #0a0c0b;
+    text-align: center;
+    margin-top: 30px;
+  }
+  
+  .garden-footer::before {
+    content: "";
+    position: absolute;
+    top: -15px;
+    left: 0;
+    width: 100%;
+    height: 15px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 12'%3E%3Cpath d='M0,12 L24,12 L24,8 C18,8 18,0 12,0 C6,0 6,8 0,8 L0,12 Z' fill='%235e4e37'/%3E%3C/svg%3E");
+    background-size: 24px 12px;
+    background-repeat: repeat-x;
+  }

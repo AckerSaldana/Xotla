@@ -1,7 +1,7 @@
-// src/App.jsx
+// src/App.jsx modificado
 import { useState, useEffect } from 'react';
 import { ThemeProvider, CssBaseline, styled } from '@mui/material';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { 
   Box, 
   Container, 
@@ -14,11 +14,17 @@ import {
   CircularProgress,
   LinearProgress,
   Snackbar,
-  Alert
+  Alert,
+  Grid,
+  Button
 } from '@mui/material';
 import {
   Spa as SpaIcon,
-  ExitToApp as LogoutIcon
+  WaterDrop as WaterIcon,
+  ExitToApp as LogoutIcon,
+  LocalFlorist as FlowerIcon,
+  Terrain as TerrainIcon,
+  Yard as YardIcon
 } from '@mui/icons-material';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth, db } from './firebase';
@@ -27,9 +33,13 @@ import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from 'firebase/firest
 // Importar componentes
 import Login from './pages/Login';
 import PlantPage from './pages/PlantPage';
-import GardenView from './components/GardenView';
 import FlowerCatalog from './components/FlowerCatalog';
 import xotlaTheme from './theme/XotlaTheme';
+
+// Importar nuevos componentes
+import GardenBackground from './components/GardenBackground';
+import GardenPlot from './components/GardenPlot';
+import './styles/GardenStyles.css';
 
 // Importaciones de utilidades
 import { 
@@ -205,7 +215,6 @@ function App() {
         lastCaredTime
       });
       
-      // Registrar en consola para debug
       console.log('Datos guardados exitosamente');
     } catch (error) {
       console.error('Error al guardar datos:', error);
@@ -600,129 +609,307 @@ function App() {
             </Container>
           </PixelBackground>
         ) : (
-          <PixelBackground>
-            <PixelAppBar position="sticky">
-              <Toolbar>
-                <PixelLogo src={XotlaLogo} alt="Xotla Logo" sx={{ mr: 2 }} />
-                <Typography variant="h3" sx={{ flexGrow: 1 }}>
-                  Xotla
-                </Typography>
-                <CoinChip
-                  icon={<SpaIcon />}
-                  label={coins}
-                  sx={{ mr: 2 }}
-                />
-                <Chip
-                  avatar={
-                    <Avatar sx={{ bgcolor: 'primary.dark' }}>
-                      {user.displayName ? user.displayName[0].toUpperCase() : 'U'}
-                    </Avatar>
-                  }
-                  label={`Nv.${userLevel}`}
-                  variant="outlined"
-                  sx={{ 
-                    mr: 2, 
-                    border: '2px solid #0f0f0f',
-                    borderRadius: 0,
-                    fontFamily: '"Press Start 2P", cursive',
-                    fontSize: '0.7rem',
-                  }}
-                />
-                <IconButton color="secondary" onClick={handleLogout}>
-                  <LogoutIcon />
-                </IconButton>
-              </Toolbar>
-            </PixelAppBar>
+          <>
+            {/* Añadir el fondo de jardín */}
+            <GardenBackground />
+            
+            <Box className="garden-container garden-border">
+              <PixelAppBar position="sticky">
+                <Toolbar>
+                  <PixelLogo src={XotlaLogo} alt="Xotla Logo" sx={{ mr: 2 }} />
+                  <Typography variant="h3" sx={{ flexGrow: 1 }}>
+                    Xotla
+                  </Typography>
+                  <CoinChip
+                    icon={<SpaIcon />}
+                    label={coins}
+                    sx={{ mr: 2 }}
+                  />
+                  <Chip
+                    avatar={
+                      <Avatar sx={{ bgcolor: 'primary.dark' }}>
+                        {user.displayName ? user.displayName[0].toUpperCase() : 'U'}
+                      </Avatar>
+                    }
+                    label={`Nv.${userLevel}`}
+                    variant="outlined"
+                    sx={{ 
+                      mr: 2, 
+                      border: '2px solid #0f0f0f',
+                      borderRadius: 0,
+                      fontFamily: '"Press Start 2P", cursive',
+                      fontSize: '0.7rem',
+                    }}
+                  />
+                  <IconButton color="secondary" onClick={handleLogout}>
+                    <LogoutIcon />
+                  </IconButton>
+                </Toolbar>
+              </PixelAppBar>
 
-            {/* Indicador de guardado */}
-            {savingData && (
-              <Box sx={{ width: '100%', mb: 2 }}>
-                <LinearProgress color="secondary" />
-                <Typography variant="caption" align="center" display="block">
-                  Guardando progreso...
+              {/* Indicador de guardado */}
+              {savingData && (
+                <Box sx={{ width: '100%', mb: 2 }}>
+                  <LinearProgress color="secondary" />
+                  <Typography variant="caption" align="center" display="block">
+                    Guardando progreso...
+                  </Typography>
+                </Box>
+              )}
+              
+              {/* Añadir decoraciones */}
+              <div className="decorative-sun"></div>
+              <div className="decorative-cloud cloud-1"></div>
+              <div className="decorative-cloud cloud-2"></div>
+              
+              {/* Añadir algunas mariposas */}
+              <div className="butterfly" style={{ top: '120px', left: '15%' }}>
+                <div className="butterfly-wings" style={{ backgroundColor: '#ffa5c3' }}></div>
+              </div>
+              <div className="butterfly" style={{ top: '250px', right: '20%' }}>
+                <div className="butterfly-wings" style={{ backgroundColor: '#7cc5e6' }}></div>
+              </div>
+              
+              {/* Añadir hojas flotantes */}
+              <div className="floating-leaf" style={{ top: '180px', left: '30%', transform: 'rotate(30deg)' }}></div>
+              <div className="floating-leaf" style={{ top: '300px', left: '70%', transform: 'rotate(-20deg)' }}></div>
+              <div className="floating-leaf" style={{ top: '400px', left: '20%', transform: 'rotate(60deg)' }}></div>
+              
+              {/* Rutas de la aplicación */}
+              <Routes>
+                <Route 
+                  path="/" 
+                  element={
+                    <Container maxWidth="lg" sx={{ mt: 3, mb: 6 }}>
+                      <Box className="info-panel">
+                        {/* Panel de estadísticas */}
+                        <Grid container spacing={2} justifyContent="space-around">
+                          <Grid item>
+                            <Box className="resource-indicator">
+                              <div className="resource-indicator-icon">
+                                <FlowerIcon sx={{ fontSize: 16, color: '#ffa5c3' }} />
+                              </div>
+                              <Typography variant="h6" className="resource-indicator-label">
+                                {inventory.length}/9
+                              </Typography>
+                            </Box>
+                            <Typography variant="body2" sx={{ fontSize: '0.6rem', color: '#ccc', textAlign: 'center' }}>
+                              Total de Plantas
+                            </Typography>
+                          </Grid>
+                          
+                          <Grid item>
+                            <Box className="resource-indicator">
+                              <div className="resource-indicator-icon">
+                                <FlowerIcon sx={{ fontSize: 16, color: '#ffdb70' }} />
+                              </div>
+                              <Typography variant="h6" className="resource-indicator-label">
+                                {inventory.filter(p => p.growthStage === 3).length}
+                              </Typography>
+                            </Box>
+                            <Typography variant="body2" sx={{ fontSize: '0.6rem', color: '#ccc', textAlign: 'center' }}>
+                              Plantas Maduras
+                            </Typography>
+                          </Grid>
+                          <Grid item>
+                            <Box className="resource-indicator">
+                              <div className="resource-indicator-icon">
+                                <WaterIcon sx={{ fontSize: 16, color: '#8ecde6' }} />
+                              </div>
+                              <Typography variant="h6" className="resource-indicator-label" sx={{ 
+                                color: inventory.filter(p => p.water <= 30).length > 0 ? '#ff6b6b' : '#f8f5e4'
+                              }}>
+                                {inventory.filter(p => p.water <= 30).length}
+                              </Typography>
+                            </Box>
+                            <Typography variant="body2" sx={{ fontSize: '0.6rem', color: '#ccc', textAlign: 'center' }}>
+                              Necesitan Agua
+                            </Typography>
+                          </Grid>
+                          
+                          <Grid item>
+                            <Box className="resource-indicator">
+                              <div className="resource-indicator-icon">
+                                <SpaIcon sx={{ fontSize: 16, color: '#78c272' }} />
+                              </div>
+                              <Typography variant="h6" className="resource-indicator-label" sx={{ 
+                                color: inventory.filter(p => p.health <= 50).length > 0 ? '#ff6b6b' : '#f8f5e4'
+                              }}>
+                                {inventory.filter(p => p.health <= 50).length}
+                              </Typography>
+                            </Box>
+                            <Typography variant="body2" sx={{ fontSize: '0.6rem', color: '#ccc', textAlign: 'center' }}>
+                              Salud Baja
+                            </Typography>
+                          </Grid>
+                        </Grid>
+                      </Box>
+
+                      <Typography 
+                        variant="h4" 
+                        component="h2" 
+                        className="garden-title"
+                      >
+                        Tu Jardín
+                      </Typography>
+
+                      <Box className="wooden-frame" sx={{ mb: 4, p: 3 }}>
+                        {/* Cuadrícula del jardín */}
+                        <div className="garden-grid">
+                          {/* Mostrar plantas existentes */}
+                          {inventory.map((plant) => (
+                            <GardenPlot 
+                              key={plant.id}
+                              isEmpty={false}
+                              plantName={plant.name}
+                              plantImage={plant.image}
+                              onClick={() => navigate(`/plant/${plant.id}`)}
+                            >
+                              {/* Barras de recursos */}
+                              <Box sx={{ width: '100%', mb: 1.5 }}>
+                                <Box className="resource-indicator">
+                                  <WaterIcon sx={{ fontSize: 14, color: '#8ecde6' }} />
+                                  <Typography variant="caption" sx={{ 
+                                    fontSize: '0.6rem', 
+                                    fontFamily: '"Press Start 2P", cursive',
+                                    ml: 0.5
+                                  }}>
+                                    Agua: {Math.round(plant.water)}%
+                                  </Typography>
+                                </Box>
+                                <div className="progress-bar">
+                                  <div 
+                                    className="progress-bar-fill progress-bar-water" 
+                                    style={{ width: `${plant.water}%` }}
+                                  ></div>
+                                </div>
+                                
+                                <Box className="resource-indicator" sx={{ mt: 1 }}>
+                                  <SpaIcon sx={{ 
+                                    fontSize: 14, 
+                                    color: plant.health <= 30 ? '#ff6b6b' : '#78c272'
+                                  }} />
+                                  <Typography variant="caption" sx={{ 
+                                    fontSize: '0.6rem', 
+                                    fontFamily: '"Press Start 2P", cursive',
+                                    ml: 0.5
+                                  }}>
+                                    Salud: {Math.round(plant.health)}%
+                                  </Typography>
+                                </Box>
+                                <div className="progress-bar">
+                                  <div 
+                                    className="progress-bar-fill progress-bar-health" 
+                                    style={{ 
+                                      width: `${plant.health}%`,
+                                      backgroundColor: plant.health <= 30 ? '#ff6b6b' : '#78c272'
+                                    }}
+                                  ></div>
+                                </div>
+                              </Box>
+                              
+                              {/* Botones de acción */}
+                              <Grid container spacing={1}>
+                                <Grid item xs={6}>
+                                  <Button 
+                                    className="nature-button water-button"
+                                    fullWidth
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleWaterPlant(plant.id);
+                                    }}
+                                    disabled={coins < WATER_COST}
+                                  >
+                                    <WaterIcon sx={{ fontSize: '0.9rem' }} />
+                                  </Button>
+                                </Grid>
+                                <Grid item xs={6}>
+                                  <Button 
+                                    className="nature-button"
+                                    fullWidth
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleFertilizePlant(plant.id);
+                                    }}
+                                    disabled={coins < FERTILIZER_COST}
+                                  >
+                                    <YardIcon sx={{ fontSize: '0.9rem' }} />
+                                  </Button>
+                                </Grid>
+                              </Grid>
+                            </GardenPlot>
+                          ))}
+                          
+                          {/* Mostrar parcelas vacías */}
+                          {Array.from({ length: Math.max(0, 9 - inventory.length) }).map((_, index) => (
+                            <GardenPlot
+                              key={`empty-${index}`}
+                              isEmpty={true}
+                              onClick={handleOpenCatalog}
+                            />
+                          ))}
+                        </div>
+                      </Box>
+                    </Container>
+                  } 
+                />
+                <Route 
+                  path="/plant/:plantId" 
+                  element={
+                    <PlantPage 
+                      inventory={inventory}
+                      coins={coins}
+                      onWater={handleWaterPlant}
+                      onFertilize={handleFertilizePlant}
+                      onSell={handleSellFlower}
+                      onUpdateInventory={setInventory}
+                    />
+                  } 
+                />
+                <Route path="*" element={<Navigate to="/" />} />
+              </Routes>
+              
+              {/* Catálogo de flores */}
+              <FlowerCatalog 
+                open={catalogOpen}
+                onClose={() => setCatalogOpen(false)}
+                flowers={availableFlowers}
+                coins={coins}
+                onBuy={handleBuyFlower}
+              />
+              
+              {/* Snackbar para notificaciones */}
+              <Snackbar 
+                open={notification.open} 
+                autoHideDuration={6000} 
+                onClose={() => setNotification({ ...notification, open: false })}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+              >
+                <Alert 
+                  onClose={() => setNotification({ ...notification, open: false })} 
+                  severity={notification.type}
+                  sx={{ 
+                    borderRadius: 0, 
+                    border: '2px solid #0f0f0f',
+                    fontFamily: '"Press Start 2P", cursive',
+                    fontSize: '0.7rem'
+                  }}
+                >
+                  {notification.message}
+                </Alert>
+              </Snackbar>
+              
+              {/* Footer mejorado */}
+              <Box 
+                component="footer" 
+                className="garden-footer"
+              >
+                <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
+                  🌸 Xotla - Tu jardín azteca de pixel art 🌸
                 </Typography>
               </Box>
-            )}
-            
-            {/* Rutas de la aplicación */}
-            <Routes>
-              <Route 
-                path="/" 
-                element={
-                  <GardenView 
-                    inventory={inventory}
-                    coins={coins}
-                    onWater={handleWaterPlant}
-                    onFertilize={handleFertilizePlant}
-                    onOpenCatalog={handleOpenCatalog}
-                    maxPlots={9} // Número máximo de parcelas disponibles
-                  />
-                } 
-              />
-              <Route 
-                path="/plant/:plantId" 
-                element={
-                  <PlantPage 
-                    inventory={inventory}
-                    coins={coins}
-                    onWater={handleWaterPlant}
-                    onFertilize={handleFertilizePlant}
-                    onSell={handleSellFlower}
-                    onUpdateInventory={setInventory}
-                  />
-                } 
-              />
-              <Route path="*" element={<Navigate to="/" />} />
-            </Routes>
-            
-            {/* Catálogo de flores */}
-            <FlowerCatalog 
-              open={catalogOpen}
-              onClose={() => setCatalogOpen(false)}
-              flowers={availableFlowers}
-              coins={coins}
-              onBuy={handleBuyFlower}
-            />
-            
-            {/* Snackbar para notificaciones */}
-            <Snackbar 
-              open={notification.open} 
-              autoHideDuration={6000} 
-              onClose={() => setNotification({ ...notification, open: false })}
-              anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-            >
-              <Alert 
-                onClose={() => setNotification({ ...notification, open: false })} 
-                severity={notification.type}
-                sx={{ 
-                  borderRadius: 0, 
-                  border: '2px solid #0f0f0f',
-                  fontFamily: '"Press Start 2P", cursive',
-                  fontSize: '0.7rem'
-                }}
-              >
-                {notification.message}
-              </Alert>
-            </Snackbar>
-            
-            {/* Footer */}
-            <Box 
-              component="footer" 
-              sx={{ 
-                p: 2, 
-                mt: 'auto', 
-                backgroundColor: 'background.paper',
-                borderTop: '3px solid #0f0f0f',
-                textAlign: 'center',
-                position: 'relative',
-                zIndex: 1
-              }}
-            >
-              <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
-                🌸 Xotla - Tu jardín azteca de pixel art 🌸
-              </Typography>
             </Box>
-          </PixelBackground>
+          </>
         )}
       </Router>
     </ThemeProvider>
