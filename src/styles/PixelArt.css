@@ -1,0 +1,112 @@
+/* src/styles/PixelArt.css */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+:root {
+  /* Paleta de colores pixel art floral */
+  --pixel-black: #0f0f0f;
+  --pixel-dark: #1e3222;
+  --pixel-medium: #3b5e41;
+  --pixel-light: #69a164;
+  --pixel-accent: #e36956;
+  --pixel-accent-light: #ff9b89;
+  --pixel-white: #f9f5e3;
+  --pixel-gray: #8ba88c;
+  --pixel-green: #78c272;
+  --pixel-blue: #8ecde6;
+  --pixel-yellow: #ffdb70;
+  --pixel-pink: #ffafd0;
+  --pixel-purple: #c896db;
+  --pixel-brown: #94784c;
+  --pixel-soil: #6e4e37;
+  
+  /* Bordes pixel art */
+  --pixel-border-small: 4px solid var(--pixel-black);
+  --pixel-border: 6px solid var(--pixel-black);
+  --pixel-border-thick: 8px solid var(--pixel-black);
+  
+  /* Sombras pixel art */
+  --pixel-shadow: 
+    4px 0 0 0 var(--pixel-black),
+    0 4px 0 0 var(--pixel-black),
+    4px 4px 0 0 var(--pixel-black);
+}
+
+/* Aplicar fuente pixel art y estilo base a toda la página */
+body, button, input, h1, h2, h3, p {
+  font-family: 'Press Start 2P', cursive;
+  image-rendering: pixelated;
+  color: var(--pixel-white);
+}
+
+body {
+  background-color: var(--pixel-dark);
+  background-image: url("data:image/svg+xml,%3Csvg width='64' height='64' viewBox='0 0 64 64' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8 16h8v8H8v-8zm16 0h8v8h-8v-8zm16 16h8v8h-8v-8zM8 32h8v8H8v-8zm16 0h8v8h-8v-8zm16-16h8v8h-8v-8z' fill='%233b5e41' fill-opacity='0.3' fill-rule='evenodd'/%3E%3C/svg%3E");
+}
+
+/* Reset del scrollbar para estilo pixel art */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--pixel-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--pixel-light);
+  border: 2px solid var(--pixel-black);
+}
+
+/* Animación de parpadeo pixel art */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* Animación de crecimiento para flores */
+@keyframes grow {
+  0% { transform: scale(0.8); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+/* Animación suave para botones */
+@keyframes pixel-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* Estilo pixelado para inputs */
+input, button {
+  border-radius: 0;
+  box-shadow: var(--pixel-shadow);
+  transition: all 0.1s ease-in-out;
+  transform-origin: center;
+  border: var(--pixel-border);
+  background-color: var(--pixel-medium);
+}
+
+/* Efecto press para botones */
+button:active {
+  transform: translate(4px, 4px);
+  box-shadow: none;
+}
+
+/* Asegurar que las imágenes se rendericen con pixel art */
+img {
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+/* Animación para nubes flotantes */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+/* Animación para el sol */
+@keyframes sun-pulse {
+  0%, 100% { filter: drop-shadow(0 0 4px rgba(255, 219, 112, 0.5)); }
+  50% { filter: drop-shadow(0 0 8px rgba(255, 219, 112, 0.8)); }
+}
