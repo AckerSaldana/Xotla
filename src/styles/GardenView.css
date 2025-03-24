@@ -1,0 +1,453 @@
+/* Rediseño para el jardín principal */
+
+/* Fondo de la aplicación con textura natural y gradiente de cielo */
+.app-background {
+    background: linear-gradient(180deg, #7cc5e6 0%, #568654 100%);
+    position: relative;
+    min-height: 100vh;
+    overflow: hidden;
+  }
+  
+  /* Textura de hierba para el fondo */
+  .app-background::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath d='M0 5 Q2.5 2.5, 5 5 T 10 5' stroke='rgba(76, 159, 71, 0.15)' fill='none'/%3E%3C/svg%3E");
+    opacity: 0.5;
+    z-index: 0;
+  }
+  
+  /* Contenedor principal del jardín con bordes decorativos */
+  .garden-container {
+    background-color: #304a2e;
+    border: 4px solid #0a0c0b;
+    border-radius: 12px;
+    box-shadow: 
+      0 0 0 4px #4c9f47,
+      0 10px 20px rgba(10, 12, 11, 0.3);
+    margin: 20px auto;
+    padding: 15px;
+    position: relative;
+    max-width: 1000px;
+    overflow: hidden;
+  }
+  
+  /* Decoración floral en las esquinas del jardín */
+  .garden-container::before,
+  .garden-container::after {
+    content: '';
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    background-size: contain;
+  }
+  
+  .garden-container::before {
+    top: -10px;
+    left: -10px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3E%3Ccircle cx='15' cy='15' r='8' fill='%23ffa5c3' stroke='%230a0c0b' stroke-width='2'/%3E%3Ccircle cx='15' cy='15' r='3' fill='%23ffd966'/%3E%3C/svg%3E");
+  }
+  
+  .garden-container::after {
+    bottom: -10px;
+    right: -10px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3E%3Ccircle cx='15' cy='15' r='8' fill='%237cc5e6' stroke='%230a0c0b' stroke-width='2'/%3E%3Ccircle cx='15' cy='15' r='3' fill='%23ffd966'/%3E%3C/svg%3E");
+  }
+  
+  /* Título del jardín con decoración */
+  .garden-title {
+    color: #f8f5e4;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 1.5rem;
+    text-align: center;
+    margin: 10px 0 20px;
+    position: relative;
+    text-shadow: 3px 3px 0 #0a0c0b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Iconos de flor al lado del título */
+  .garden-title::before,
+  .garden-title::after {
+    content: '✿';
+    font-size: 1.2rem;
+    color: #ffa5c3;
+    margin: 0 10px;
+    text-shadow: 1px 1px 0 #0a0c0b;
+  }
+  
+  /* Cuadrícula del jardín con espaciado natural */
+  .garden-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 20px;
+    position: relative;
+  }
+  
+  /* Parcela vacía con textura de tierra y bordes más naturales */
+  .empty-plot {
+    background-color: #5e3c28;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6' viewBox='0 0 6 6'%3E%3Cpath fill='%238c6840' fill-opacity='0.2' d='M0 0h2v2H0V0zm2 2h2v2H2V2zm2 2h2v2H4V4z'%3E%3C/path%3E%3C/svg%3E");
+    border: 4px solid #3a2a1d;
+    border-radius: 8px;
+    min-height: 200px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: transform 0.3s;
+  }
+  
+  .empty-plot:hover {
+    transform: translateY(-5px);
+  }
+  
+  /* Añade un poco de textura adicional a las parcelas vacías */
+  .empty-plot::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+      radial-gradient(#0a0c0b33 1px, transparent 1px),
+      radial-gradient(#0a0c0b33 1px, transparent 1px);
+    background-size: 10px 10px;
+    background-position: 0 0, 5px 5px;
+    opacity: 0.5;
+    pointer-events: none;
+  }
+  
+  /* Botón de plantar con estilo más bonito */
+  .plant-button {
+    background-color: #ffa5c3;
+    border: 3px solid #0a0c0b;
+    border-radius: 4px;
+    box-shadow: 3px 3px 0 #0a0c0b;
+    color: #0a0c0b;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.8rem;
+    padding: 8px 15px;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s;
+    margin-top: 10px;
+  }
+  
+  .plant-button:hover {
+    background-color: #ffd0e1;
+    transform: translateY(-2px);
+  }
+  
+  .plant-button:active {
+    transform: translate(3px, 3px);
+    box-shadow: none;
+  }
+  
+  /* Parcela con planta (tarjeta mejorada) */
+  .plant-plot {
+    background-color: #304a2e;
+    border: 4px solid #0a0c0b;
+    border-radius: 8px;
+    box-shadow: 6px 6px 0 #0a0c0b;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px;
+    position: relative;
+    transition: transform 0.3s, box-shadow 0.3s;
+    overflow: visible;
+  }
+  
+  .plant-plot:hover {
+    transform: translateY(-5px);
+    box-shadow: 6px 11px 0 #0a0c0b;
+  }
+  
+  /* Etiqueta de la etapa de la planta */
+  .plant-stage-tag {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background-color: #ffd966;
+    border: 2px solid #0a0c0b;
+    border-radius: 4px;
+    box-shadow: 2px 2px 0 #0a0c0b;
+    color: #0a0c0b;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.6rem;
+    padding: 4px 8px;
+    z-index: 5;
+  }
+  
+  /* Contenedor de tierra para la planta */
+  .plant-soil-container {
+    background-color: #5e3c28;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6' viewBox='0 0 6 6'%3E%3Cpath fill='%238c6840' fill-opacity='0.2' d='M0 0h2v2H0V0zm2 2h2v2H2V2zm2 2h2v2H4V4z'%3E%3C/path%3E%3C/svg%3E");
+    border-radius: 0 0 40% 40% / 20%;
+    width: 100%;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    margin-bottom: 15px;
+  }
+  
+  /* Sombra bajo la planta */
+  .plant-soil-container::after {
+    content: '';
+    position: absolute;
+    bottom: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 8px;
+    background-color: rgba(10, 12, 11, 0.3);
+    border-radius: 50%;
+    filter: blur(3px);
+  }
+  
+  /* Imagen de la planta con animación de balanceo */
+  .plant-image {
+    max-width: 80px;
+    max-height: 80px;
+    position: relative;
+    z-index: 2;
+    animation: plant-sway 3s infinite alternate ease-in-out;
+    transform-origin: bottom center;
+  }
+  
+  @keyframes plant-sway {
+    0% { transform: rotate(-2deg) translateY(0); }
+    100% { transform: rotate(2deg) translateY(-3px); }
+  }
+  
+  /* Barras de recursos con estilo mejorado */
+  .resource-bar-container {
+    width: 100%;
+    margin-bottom: 8px;
+  }
+  
+  .resource-bar-label {
+    display: flex;
+    align-items: center;
+    margin-bottom: 4px;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.7rem;
+    color: #f8f5e4;
+  }
+  
+  .resource-bar-label svg {
+    margin-right: 5px;
+    font-size: 0.9rem;
+  }
+  
+  .resource-bar {
+    height: 10px;
+    background-color: #182418;
+    border: 2px solid #0a0c0b;
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  .resource-bar-fill {
+    height: 100%;
+    background-color: #7cc5e6; /* Para agua */
+    transition: width 0.5s;
+    position: relative;
+  }
+  
+  .resource-bar-fill.health {
+    background-color: #4c9f47; /* Para salud */
+  }
+  
+  /* Botones de acción */
+  .action-buttons {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 10px;
+  }
+  
+  .action-button {
+    background-color: #7cc5e6; /* Color para agua */
+    border: 2px solid #0a0c0b;
+    border-radius: 4px;
+    box-shadow: 2px 2px 0 #0a0c0b;
+    color: #0a0c0b;
+    width: 48%;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.1s, box-shadow 0.1s;
+  }
+  
+  .action-button.fertilize {
+    background-color: #4c9f47; /* Color para fertilizar */
+  }
+  
+  .action-button:hover {
+    filter: brightness(1.1);
+  }
+  
+  .action-button:active {
+    transform: translate(2px, 2px);
+    box-shadow: none;
+  }
+  
+  /* Panel superior con estadísticas */
+  .stats-panel {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #304a2e;
+    border: 3px solid #0a0c0b;
+    border-radius: 8px;
+    box-shadow: 4px 4px 0 #0a0c0b;
+  }
+  
+  .stat-item {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    background-color: #182418;
+    border: 2px solid #0a0c0b;
+    border-radius: 4px;
+    padding: 8px 12px;
+  }
+  
+  .stat-value {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 1rem;
+    color: #f8f5e4;
+  }
+  
+  .stat-label {
+    font-size: 0.6rem;
+    color: #7a9775;
+    margin-top: 4px;
+  }
+  
+  /* Barra superior con contador de monedas y nivel */
+  .top-bar {
+    background-color: #3a7a32;
+    border-bottom: 3px solid #0a0c0b;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 15px;
+    box-shadow: 0 4px 0 rgba(10, 12, 11, 0.2);
+  }
+  
+  .coin-counter {
+    background-color: #ffd966;
+    border: 2px solid #0a0c0b;
+    border-radius: 4px;
+    box-shadow: 2px 2px 0 #0a0c0b;
+    color: #0a0c0b;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.8rem;
+    padding: 5px 10px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .coin-counter svg {
+    margin-right: 5px;
+  }
+  
+  .level-badge {
+    background-color: #4c9f47;
+    border: 2px solid #0a0c0b;
+    border-radius: 4px;
+    box-shadow: 2px 2px 0 #0a0c0b;
+    color: #f8f5e4;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.8rem;
+    padding: 5px 10px;
+  }
+  
+  /* Sol decorativo */
+  .decorative-sun {
+    position: absolute;
+    top: 30px;
+    right: 40px;
+    width: 40px;
+    height: 40px;
+    background-color: #ffd966;
+    border: 2px solid #0a0c0b;
+    border-radius: 50%;
+    box-shadow: 0 0 15px rgba(255, 217, 102, 0.7);
+    animation: sun-pulse 3s infinite;
+    z-index: 1;
+  }
+  
+  @keyframes sun-pulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 10px rgba(255, 217, 102, 0.6); }
+    50% { transform: scale(1.05); box-shadow: 0 0 20px rgba(255, 217, 102, 0.8); }
+  }
+  
+  /* Nubes decorativas */
+  .decorative-cloud {
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    z-index: 0;
+  }
+  
+  .cloud-1 {
+    top: 60px;
+    left: 10%;
+    width: 60px;
+    height: 30px;
+    animation: cloud-drift 30s linear infinite;
+  }
+  
+  .cloud-2 {
+    top: 40px;
+    left: 60%;
+    width: 80px;
+    height: 40px;
+    animation: cloud-drift 40s linear infinite 10s;
+  }
+  
+  @keyframes cloud-drift {
+    0% { transform: translateX(-100px); }
+    100% { transform: translateX(calc(100vw + 100px)); }
+  }
+  
+  /* Pie de página con textura de tierra */
+  .footer {
+    background-color: #3a2a1d;
+    border-top: 3px solid #0a0c0b;
+    color: #f8f5e4;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.6rem;
+    padding: 8px;
+    text-align: center;
+    position: relative;
+  }
+  
+  .footer::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 0;
+    width: 100%;
+    height: 10px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='10' viewBox='0 0 40 10'%3E%3Cpath d='M0 10 L0 5 C10 5, 10 0, 20 0 C30 0, 30 5, 40 5 L40 10 Z' fill='%233a2a1d'/%3E%3C/svg%3E");
+    background-repeat: repeat-x;
+  }

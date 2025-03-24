@@ -2,111 +2,614 @@
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
 :root {
-  /* Paleta de colores pixel art floral */
-  --pixel-black: #0f0f0f;
-  --pixel-dark: #1e3222;
-  --pixel-medium: #3b5e41;
-  --pixel-light: #69a164;
-  --pixel-accent: #e36956;
-  --pixel-accent-light: #ff9b89;
-  --pixel-white: #f9f5e3;
-  --pixel-gray: #8ba88c;
-  --pixel-green: #78c272;
-  --pixel-blue: #8ecde6;
-  --pixel-yellow: #ffdb70;
-  --pixel-pink: #ffafd0;
-  --pixel-purple: #c896db;
-  --pixel-brown: #94784c;
-  --pixel-soil: #6e4e37;
-  
-  /* Bordes pixel art */
-  --pixel-border-small: 4px solid var(--pixel-black);
-  --pixel-border: 6px solid var(--pixel-black);
-  --pixel-border-thick: 8px solid var(--pixel-black);
-  
-  /* Sombras pixel art */
-  --pixel-shadow: 
-    4px 0 0 0 var(--pixel-black),
-    0 4px 0 0 var(--pixel-black),
-    4px 4px 0 0 var(--pixel-black);
-}
-
+    /* Colores base */
+    --pixel-black: #0a0c0b;        /* Negro más profundo */
+    --pixel-dark: #182418;         /* Verde oscuro más intenso */
+    --pixel-medium: #304a2e;       /* Verde medio más natural */
+    --pixel-light: #568654;        /* Verde claro más vivo */
+    
+    /* Acentos y elementos naturales */
+    --pixel-accent: #d14b45;       /* Rojo coral más intenso */
+    --pixel-accent-light: #ff8c7a; /* Rosa coral brillante */
+    --pixel-white: #f8f5e4;        /* Blanco con tono vintage */
+    --pixel-gray: #7a9775;         /* Gris verdoso natural */
+    
+    /* Colores florales */
+    --pixel-green: #4c9f47;        /* Verde más vibrante */
+    --pixel-blue: #7cc5e6;         /* Azul cielo claro */
+    --pixel-yellow: #ffd966;       /* Amarillo dorado */
+    --pixel-pink: #ffa5c3;         /* Rosa floral */
+    --pixel-purple: #c387d1;       /* Púrpura lavanda */
+    --pixel-brown: #8c6840;        /* Marrón cálido */
+    --pixel-soil: #5e3c28;         /* Marrón tierra rico */
+    
+    /* Variaciones para sombras y elementos */
+    --pixel-green-dark: #3a7a32;   /* Verde oscuro para sombras */
+    --pixel-foliage: #7bba74;      /* Verde para follaje */
+    --pixel-highlight: #fcfbf7;    /* Blanco para brillos y destellos */
+    --pixel-water: #619dc1;        /* Azul agua más natural */
+    
+    /* Bordes pixel art refinados */
+    --pixel-border-small: 3px solid var(--pixel-black);
+    --pixel-border: 4px solid var(--pixel-black);
+    --pixel-border-thick: 5px solid var(--pixel-black);
+    
+    /* Sombras pixel art */
+    --pixel-shadow: 
+      3px 0 0 0 var(--pixel-black),
+      0 3px 0 0 var(--pixel-black),
+      3px 3px 0 0 var(--pixel-black);
+    --pixel-shadow-soft:
+      2px 0 0 0 rgba(10, 12, 11, 0.8),
+      0 2px 0 0 rgba(10, 12, 11, 0.8),
+      2px 2px 0 0 rgba(10, 12, 11, 0.8);
+  }
 /* Aplicar fuente pixel art y estilo base a toda la página */
+/* Correcciones para alineación de texto y elementos */
+
+/* Propiedades globales de texto */
 body, button, input, h1, h2, h3, p {
-  font-family: 'Press Start 2P', cursive;
-  image-rendering: pixelated;
-  color: var(--pixel-white);
-}
+    font-family: 'Press Start 2P', cursive;
+    image-rendering: pixelated;
+    -webkit-font-smoothing: none;  /* Fundamental para textos nítidos en pixel art */
+    font-smooth: never;
+  }
+  
+  /* Mejora para títulos */
+  h1, h2, h3, h4, h5, h6 {
+    text-align: center;
+    line-height: 1.4;
+    margin: 0.5em 0;
+    width: 100%;
+    padding: 0 10px;
+    box-sizing: border-box;
+  }
+  
+  /* Ajustes de tamaño de fuente para pixel art */
+  h1 { font-size: 1.5rem; letter-spacing: 1px; }
+  h2 { font-size: 1.2rem; letter-spacing: 0.5px; }
+  h3 { font-size: 1rem; }
+  p, .body-text { font-size: 0.7rem; line-height: 1.5; }
+  .small-text { font-size: 0.6rem; }
+  
+  /* Eliminar problemas de alineación en contenedores */
+  .centered-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0.5rem;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  /* Ajustar botones para pixel art */
+  button, .btn {
+    font-size: 0.7rem;
+    text-align: center;
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    height: auto;
+    min-height: 35px;
+  }
+  
+  /* Alinear iconos con texto */
+  button svg, .btn svg, .icon {
+    display: inline-block;
+    vertical-align: middle;
+    margin-top: -2px; /* Ajuste sutil para mejor alineación */
+  }
+  
+  /* Eliminar problemas comunes en Material UI */
+  .MuiTypography-root {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 0.5rem;
+  }
+  
+  .MuiButton-root {
+    line-height: 1.2;
+    text-transform: none;
+    padding: 0.5rem 1rem;
+  }
+  
+  .MuiButton-startIcon, .MuiButton-endIcon {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+  }
+  
+  /* Corregir problemas de Cards */
+  .MuiCard-root {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .MuiCardContent-root {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  /* Asegurar que los elementos de formulario tengan el estilo adecuado */
+  input, select, textarea {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.7rem;
+    padding: 0.5rem;
+    border: var(--pixel-border-small);
+    background-color: var(--pixel-dark);
+    color: var(--pixel-white);
+  }
+  
+  /* Sombras de texto para mejor legibilidad */
+  .text-shadow {
+    text-shadow: 2px 2px 0 var(--pixel-black);
+  }
+  
+  .light-text-shadow {
+    text-shadow: 1px 1px 0 var(--pixel-black);
+  }
+  
+  /* Corregir alineación en componentes flexbox */
+  .flex-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  
+  .flex-column {
+    flex-direction: column;
+  }
+  
+  /* Espacio consistente entre elementos */
+  .spacing-y > * {
+    margin-bottom: 0.5rem;
+  }
+  
+  .spacing-y > *:last-child {
+    margin-bottom: 0;
+  }
+  
+  .spacing-x > * {
+    margin-right: 0.5rem;
+  }
+  
+  .spacing-x > *:last-child {
+    margin-right: 0;
+  }
 
-body {
-  background-color: var(--pixel-dark);
-  background-image: url("data:image/svg+xml,%3Csvg width='64' height='64' viewBox='0 0 64 64' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8 16h8v8H8v-8zm16 0h8v8h-8v-8zm16 16h8v8h-8v-8zM8 32h8v8H8v-8zm16 0h8v8h-8v-8zm16-16h8v8h-8v-8z' fill='%233b5e41' fill-opacity='0.3' fill-rule='evenodd'/%3E%3C/svg%3E");
-}
+  /* Animaciones suaves para elementos pixel art */
 
-/* Reset del scrollbar para estilo pixel art */
-::-webkit-scrollbar {
-  width: 10px;
-}
+/* Movimiento suave de plantas */
+@keyframes plant-sway {
+    0% { transform: rotate(-1.5deg) scale(1); }
+    50% { transform: rotate(0deg) scale(1.02); }
+    100% { transform: rotate(1.5deg) scale(1); }
+  }
+  
+  .plant-sway {
+    animation: plant-sway 4s ease-in-out infinite;
+    transform-origin: bottom center;
+  }
+  
+  /* Brillo suave para flores */
+  @keyframes flower-glow {
+    0%, 100% { filter: drop-shadow(0 0 2px rgba(255, 165, 195, 0.3)); }
+    50% { filter: drop-shadow(0 0 5px rgba(255, 165, 195, 0.6)); }
+  }
+  
+  .flower-glow {
+    animation: flower-glow 3s ease-in-out infinite;
+  }
+  
+  /* Efecto de crecimiento para nuevas plantas */
+  @keyframes grow-from-seed {
+    0% { transform: scale(0.2) translateY(10px); opacity: 0.7; }
+    60% { transform: scale(1.1) translateY(-5px); opacity: 1; }
+    100% { transform: scale(1) translateY(0); opacity: 1; }
+  }
+  
+  .grow-effect {
+    animation: grow-from-seed 1.5s ease-out forwards;
+  }
+  
+  /* Flotación suave para elementos suspendidos */
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+  }
+  
+  .floating {
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  /* Efecto de pulso para elementos interactivos */
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+  
+  .pulse-effect {
+    animation: pulse 2s ease-in-out infinite;
+  }
+  
+  /* Parpadeo para elementos que necesitan atención */
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+  
+  .blink-effect {
+    animation: blink 1.2s infinite;
+  }
+  
+  /* Efecto de lluvia para regar plantas */
+  @keyframes water-drop {
+    0% { transform: translateY(-5px); opacity: 0; }
+    30% { opacity: 0.8; }
+    100% { transform: translateY(30px); opacity: 0; }
+  }
+  
+  .water-drop {
+    width: 2px;
+    height: 8px;
+    background-color: var(--pixel-blue);
+    position: absolute;
+    animation: water-drop 1s linear infinite;
+  }
+  
+  /* Efecto para el sol */
+  @keyframes sun-pulse {
+    0%, 100% { box-shadow: 0 0 10px rgba(255, 217, 102, 0.6); }
+    50% { box-shadow: 0 0 20px rgba(255, 217, 102, 0.8); }
+  }
+  
+  .sun-pulse {
+    animation: sun-pulse 4s infinite;
+  }
+  
+  /* Animación para hojas flotando */
+  @keyframes leaf-float {
+    0% { transform: rotate(0deg) translateX(0) translateY(0); }
+    25% { transform: rotate(5deg) translateX(5px) translateY(5px); }
+    50% { transform: rotate(0deg) translateX(10px) translateY(0); }
+    75% { transform: rotate(-5deg) translateX(5px) translateY(-5px); }
+    100% { transform: rotate(0deg) translateX(0) translateY(0); }
+  }
+  
+  .floating-leaf {
+    position: absolute;
+    width: 10px;
+    height: 6px;
+    background-color: var(--pixel-green);
+    animation: leaf-float 10s linear infinite;
+    opacity: 0.7;
+  }
+  
+  /* Efecto de brillos para momentos de recompensa */
+  @keyframes sparkle {
+    0% { transform: scale(0); opacity: 0; }
+    50% { transform: scale(1.2); opacity: 1; }
+    100% { transform: scale(0); opacity: 0; }
+  }
+  
+  .sparkle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background-color: var(--pixel-white);
+    border-radius: 50%;
+    animation: sparkle 1s linear infinite;
+  }
+  
+  /* Animación para mariposas o insectos */
+  @keyframes butterfly-flutter {
+    0%, 100% { transform: rotate(-5deg) translateY(0); }
+    25% { transform: rotate(10deg) translateY(-3px); }
+    50% { transform: rotate(-5deg) translateY(-5px); }
+    75% { transform: rotate(10deg) translateY(-3px); }
+  }
+  
+  .butterfly {
+    position: absolute;
+    animation: butterfly-flutter 3s ease-in-out infinite;
+  }
+  
+  /* Animación para botones cuando están activos */
+  @keyframes button-press {
+    0% { transform: translateY(0); box-shadow: var(--pixel-shadow); }
+    100% { transform: translateY(3px); box-shadow: none; }
+  }
+  
+  .button-press {
+    animation: button-press 0.2s forwards;
+  }
 
-::-webkit-scrollbar-track {
-  background: var(--pixel-dark);
-}
+  /* Elementos decorativos pixel art para enriquecer la experiencia visual */
 
-::-webkit-scrollbar-thumb {
-  background: var(--pixel-light);
-  border: 2px solid var(--pixel-black);
-}
-
-/* Animación de parpadeo pixel art */
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
-}
-
-/* Animación de crecimiento para flores */
-@keyframes grow {
-  0% { transform: scale(0.8); }
-  50% { transform: scale(1.1); }
-  100% { transform: scale(1); }
-}
-
-/* Animación suave para botones */
-@keyframes pixel-pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-}
-
-/* Estilo pixelado para inputs */
-input, button {
-  border-radius: 0;
-  box-shadow: var(--pixel-shadow);
-  transition: all 0.1s ease-in-out;
-  transform-origin: center;
-  border: var(--pixel-border);
-  background-color: var(--pixel-medium);
-}
-
-/* Efecto press para botones */
-button:active {
-  transform: translate(4px, 4px);
-  box-shadow: none;
-}
-
-/* Asegurar que las imágenes se rendericen con pixel art */
-img {
-  image-rendering: pixelated;
-  image-rendering: -moz-crisp-edges;
-  image-rendering: crisp-edges;
-}
-
-/* Animación para nubes flotantes */
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
-}
-
-/* Animación para el sol */
-@keyframes sun-pulse {
-  0%, 100% { filter: drop-shadow(0 0 4px rgba(255, 219, 112, 0.5)); }
-  50% { filter: drop-shadow(0 0 8px rgba(255, 219, 112, 0.8)); }
-}
+/* Flor pequeña decorativa */
+.pixel-flower {
+    position: relative;
+    width: 10px;
+    height: 10px;
+  }
+  
+  .pixel-flower::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--pixel-pink);
+    border-radius: 50%;
+    border: 1px solid var(--pixel-black);
+  }
+  
+  .pixel-flower::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 40%;
+    height: 40%;
+    background-color: var(--pixel-yellow);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+  }
+  
+  /* Variantes de colores para flores */
+  .pixel-flower.blue::before {
+    background-color: var(--pixel-blue);
+  }
+  
+  .pixel-flower.purple::before {
+    background-color: var(--pixel-purple);
+  }
+  
+  .pixel-flower.yellow::before {
+    background-color: var(--pixel-yellow);
+  }
+  
+  /* Decoración de hojas */
+  .pixel-leaf {
+    position: relative;
+    width: 8px;
+    height: 12px;
+    transform: rotate(45deg);
+    background-color: var(--pixel-green);
+    border-radius: 50% 50% 0 50%;
+    border: 1px solid var(--pixel-black);
+  }
+  
+  /* Maceta decorativa */
+  .pixel-pot {
+    position: relative;
+    width: 20px;
+    height: 16px;
+  }
+  
+  .pixel-pot::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70%;
+    height: 4px;
+    background-color: var(--pixel-soil);
+    border: 1px solid var(--pixel-black);
+  }
+  
+  .pixel-pot::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 12px;
+    background-color: var(--pixel-brown);
+    border: 1px solid var(--pixel-black);
+    border-radius: 0 0 4px 4px;
+  }
+  
+  /* Mariposa decorativa */
+  .pixel-butterfly {
+    position: absolute;
+    width: 10px;
+    height: 8px;
+  }
+  
+  .pixel-butterfly::before,
+  .pixel-butterfly::after {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 8px;
+    background-color: var(--pixel-pink);
+    border: 1px solid var(--pixel-black);
+    border-radius: 50% 50% 0 50%;
+    animation: wing-flap 0.3s infinite alternate;
+  }
+  
+  .pixel-butterfly::before {
+    left: -3px;
+    transform-origin: right center;
+  }
+  
+  .pixel-butterfly::after {
+    right: -3px;
+    transform: scaleX(-1);
+    transform-origin: left center;
+    animation: wing-flap 0.3s infinite alternate reverse;
+  }
+  
+  @keyframes wing-flap {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(30deg); }
+  }
+  
+  /* Césped decorativo */
+  .pixel-grass {
+    position: relative;
+    height: 8px;
+    overflow: hidden;
+  }
+  
+  .pixel-grass::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+      linear-gradient(to right, transparent 0%, transparent 10%, var(--pixel-green) 10%, var(--pixel-green) 20%, 
+                                transparent 20%, transparent 30%, var(--pixel-green) 30%, var(--pixel-green) 40%,
+                                transparent 40%, transparent 50%, var(--pixel-green) 50%, var(--pixel-green) 60%,
+                                transparent 60%, transparent 70%, var(--pixel-green) 70%, var(--pixel-green) 80%,
+                                transparent 80%, transparent 90%, var(--pixel-green) 90%, var(--pixel-green) 100%);
+  }
+  
+  /* Nubes pixel art */
+  .pixel-cloud {
+    position: absolute;
+    width: 40px;
+    height: 20px;
+    background-color: rgba(255, 255, 255, 0.8);
+  }
+  
+  .pixel-cloud::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 5px;
+    width: 15px;
+    height: 15px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+  }
+  
+  .pixel-cloud::after {
+    content: '';
+    position: absolute;
+    top: -15px;
+    right: 5px;
+    width: 20px;
+    height: 20px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+  }
+  
+  /* Sol pixel art */
+  .pixel-sun {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    background-color: var(--pixel-yellow);
+    border: 2px solid var(--pixel-black);
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(255, 217, 102, 0.6);
+  }
+  
+  .pixel-sun::after {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: -8px;
+    right: -8px;
+    bottom: -8px;
+    background: radial-gradient(circle, rgba(255, 217, 102, 0.3) 0%, rgba(255, 217, 102, 0) 70%);
+    border-radius: 50%;
+    z-index: -1;
+  }
+  
+  /* Bordes decorativos */
+  .pixel-border {
+    position: relative;
+  }
+  
+  .pixel-border::before {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    right: -4px;
+    bottom: -4px;
+    border: 2px dashed var(--pixel-green);
+    pointer-events: none;
+    z-index: -1;
+  }
+  
+  /* Banca de jardín */
+  .pixel-bench {
+    position: relative;
+    width: 60px;
+    height: 20px;
+    background-color: var(--pixel-brown);
+    border: 2px solid var(--pixel-black);
+  }
+  
+  .pixel-bench::before,
+  .pixel-bench::after {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 10px;
+    bottom: -10px;
+    background-color: var(--pixel-brown);
+    border: 2px solid var(--pixel-black);
+  }
+  
+  .pixel-bench::before {
+    left: 8px;
+  }
+  
+  .pixel-bench::after {
+    right: 8px;
+  }
+  
+  /* Ventana decorativa */
+  .pixel-window {
+    width: 30px;
+    height: 40px;
+    background-color: var(--pixel-blue);
+    border: 3px solid var(--pixel-black);
+    position: relative;
+  }
+  
+  .pixel-window::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: var(--pixel-black);
+  }
+  
+  .pixel-window::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 3px;
+    height: 100%;
+    background-color: var(--pixel-black);
+  }
+  
+  /* Decoración de piedras */
+  .pixel-stone {
+    width: 12px;
+    height: 8px;
+    background-color: #a0a0a0;
+    border: 1px solid var(--pixel-black);
+    border-radius: 50% 40% 45% 50%;
+  }
